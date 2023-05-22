@@ -45,12 +45,13 @@ test=pd.DataFrame(test,columns=test_pd.columns)
 
 
 # print("ModelName    \t")
-res_dict={'Model':[],'Score(10fold)':[]}
+res_dict={'Model':[],'Score(10fold)':[],'F1Score(10fold)':[]}
 predicts=[]
 for model_name,model in models.items():
     res_dict['Model'].append(model_name)
-    score=MyKfold(model,X,y)
+    score,f1_score=MyKfold(model,X,y)
     res_dict['Score(10fold)'].append("{:.3%}".format(score))
+    res_dict['F1Score(10fold)'].append("{:.3%}".format(f1_score))
     if score > 0.86 :
         predicts.append(model.predict(test))
 

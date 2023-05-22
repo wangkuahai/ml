@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score,f1_score
 from sklearn.model_selection import KFold
 
 def MyKfold(model, X, y):
@@ -20,6 +20,7 @@ def MyKfold(model, X, y):
 
     # 实现10折交叉验证
     scores = []  # 存储每个 fold 的准确率
+    f1_scores = []
     kfold = KFold(n_splits=10, shuffle=True, random_state=42)
     for train_idx, val_idx in kfold.split(X, y):
         X_train_fold, y_train_fold = X.iloc[train_idx], y.iloc[train_idx]
@@ -41,9 +42,11 @@ def MyKfold(model, X, y):
 
         score = accuracy_score(y_val_fold, y_pred)
         scores.append(score)
+        f1_scores.append(f1_score(y_val_fold,y_pred,average="macro"))
         # print(model.predict(test))
 
     # 计算平均准确率并返回
     avg_score = sum(scores) / len(scores)
-    return avg_score
+    avg_f1 = sum(f1_scores) / len(f1_scores)
+    return avg_score,avg_f1
 
