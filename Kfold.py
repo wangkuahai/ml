@@ -21,7 +21,7 @@ def MyKfold(model, X, y):
     # 实现10折交叉验证
     scores = []  # 存储每个 fold 的准确率
     f1_scores = []
-    kfold = KFold(n_splits=10, shuffle=True, random_state=42)
+    kfold = KFold(n_splits=5, shuffle=True, random_state=42)
     for train_idx, val_idx in kfold.split(X, y):
         X_train_fold, y_train_fold = X.iloc[train_idx], y.iloc[train_idx]
         X_val_fold, y_val_fold = X.iloc[val_idx], y.iloc[val_idx]

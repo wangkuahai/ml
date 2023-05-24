@@ -3,8 +3,9 @@ import pandas as pd
 from sklearn.base import clone
 
 class EnsembleCLF:
-    def __init__(self,BaseModel):
+    def __init__(self,BaseModel,BaseNum):
         self.BaseModel=BaseModel 
+        self.BaseNum=BaseNum
     def fit(self, X_train, y_train):
         self.models=[]
         df = pd.concat([X_train, y_train], axis=1)
@@ -24,15 +25,17 @@ class EnsembleCLF:
 
         # 随机划分正例
         positive_partitions = []
-        for i in range(int(p)-1):
-            partition = positive_df.sample(n_per_partition, replace=False,random_state=11)
-            positive_partitions.append(partition)
-            positive_df.drop(partition.index, inplace=True)
-        positive_partitions.append(positive_df)
+        for basenum in range(self.BaseNum):
+            positive_df=df.sample(frac=1, random_state=42)
+            for i in range(int(p)-1):
+                partition = positive_df.sample(n_per_partition, replace=False,random_state=11)
+                positive_partitions.append(partition)
+                positive_df.drop(partition.index, inplace=True)
+            positive_partitions.append(positive_df)
 
         # 组合训练集
-        for i in range(int(p)):
-            train_data = pd.concat([positive_partitions[i], negative_df], axis=0)
+        for positive_data in positive_partitions:
+            train_data = pd.concat([positive_data, negative_df], axis=0)
             X_train, y_train = train_data.drop('label', axis=1), train_data['label']
             self.models.append(clone(self.BaseModel).fit(X_train,y_train))
     def predict(self, X):
